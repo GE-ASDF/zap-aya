@@ -1,47 +1,6 @@
-2023/06/28-19:28:00.595 44b0 Reusing MANIFEST C:\Users\Administrador\Documents\api-aya-zap\tokens\whatsbot\Default\IndexedDB\https_web.whatsapp.com_0.indexeddb.leveldb/MANIFEST-000001
-2023/06/28-19:28:00.595 44b0 Recovering log #195
-2023/06/28-19:28:00.600 44b0 Reusing old log C:\Users\Administrador\Documents\api-aya-zap\tokens\whatsbot\Default\IndexedDB\https_web.whatsapp.com_0.indexeddb.leveldb/000195.log 
-2023/06/28-19:28:00.600 44b0 Delete type=2 #193
-2023/06/28-19:28:00.655 48c Level-0 table #200: started
-2023/06/28-19:28:00.748 48c Level-0 table #200: 82861 bytes OK
-2023/06/28-19:28:00.791 48c Delete type=0 #195
-2023/06/28-19:28:00.792 48c Manual compaction at level-0 from '\x00?\x00\x00\x00' @ 72057594037927935 : 1 .. '\x00@\x00\x00\x00' @ 0 : 0; will stop at '\x00?.\x02\x01\x0e\x00W\x00A\x00A\x00D\x00V\x00S\x00e\x00c\x00r\x00e\x00t\x00K\x00e\x00y' @ 76012 : 1
-2023/06/28-19:28:00.792 48c Compacting 1@0 + 1@1 files
-2023/06/28-19:28:00.889 48c Generated table #201@0: 5381 keys, 66411 bytes
-2023/06/28-19:28:00.889 48c Compacted 1@0 + 1@1 files => 66411 bytes
-2023/06/28-19:28:00.941 48c compacted to: files[ 0 1 1 0 0 0 0 ]
-2023/06/28-19:28:00.941 48c Delete type=2 #200
-2023/06/28-19:28:00.942 48c Manual compaction at level-0 from '\x00?.\x02\x01\x0e\x00W\x00A\x00A\x00D\x00V\x00S\x00e\x00c\x00r\x00e\x00t\x00K\x00e\x00y' @ 76012 : 1 .. '\x00@\x00\x00\x00' @ 0 : 0; will stop at (end)
-2023/06/28-19:28:00.966 3be0 Level-0 table #203: started
-2023/06/28-19:28:00.986 3be0 Level-0 table #203: 1759 bytes OK
-2023/06/28-19:28:01.035 3be0 Delete type=2 #197
-2023/06/28-19:28:01.035 3be0 Delete type=0 #199
-2023/06/28-19:28:01.036 3be0 Manual compaction at level-0 from '\x00>\x00\x00\x00' @ 72057594037927935 : 1 .. '\x00?\x00\x00\x00' @ 0 : 0; will stop at '\x00@\x00\x00\x05' @ 77297 : 1
-2023/06/28-19:28:01.036 3be0 Compacting 1@0 + 1@1 files
-2023/06/28-19:28:01.102 3be0 Generated table #204@0: 5299 keys, 64990 bytes
-2023/06/28-19:28:01.102 3be0 Compacted 1@0 + 1@1 files => 64990 bytes
-2023/06/28-19:28:01.135 3be0 compacted to: files[ 0 1 1 0 0 0 0 ]
-2023/06/28-19:28:01.135 3be0 Delete type=2 #203
-2023/06/28-19:28:01.136 3be0 Manual compaction at level-0 from '\x00@\x00\x00\x05' @ 77297 : 1 .. '\x00?\x00\x00\x00' @ 0 : 0; will stop at (end)
-2023/06/28-19:28:01.136 3be0 Level-0 table #206: started
-2023/06/28-19:28:01.175 3be0 Level-0 table #206: 5570 bytes OK
-2023/06/28-19:28:01.202 3be0 Delete type=2 #201
-2023/06/28-19:28:01.202 3be0 Delete type=0 #202
-2023/06/28-19:28:01.202 3be0 Manual compaction at level-0 from '\x00=\x00\x00\x00' @ 72057594037927935 : 1 .. '\x00>\x00\x00\x00' @ 0 : 0; will stop at '\x00@\x01\x1f\x03\xcd$e\xeeA\x90xB\x00\x03\x00\x00\x00\x00\x00\x00\x00@' @ 77741 : 1
-2023/06/28-19:28:01.202 3be0 Compacting 1@0 + 1@1 files
-2023/06/28-19:28:01.288 3be0 Generated table #207@0: 5417 keys, 67507 bytes
-2023/06/28-19:28:01.288 3be0 Compacted 1@0 + 1@1 files => 67507 bytes
-2023/06/28-19:28:01.324 3be0 compacted to: files[ 0 1 1 0 0 0 0 ]
-2023/06/28-19:28:01.324 3be0 Delete type=2 #206
-2023/06/28-19:28:01.324 3be0 Manual compaction at level-0 from '\x00@\x01\x1f\x03\xcd$e\xeeA\x90xB\x00\x03\x00\x00\x00\x00\x00\x00\x00@' @ 77741 : 1 .. '\x00>\x00\x00\x00' @ 0 : 0; will stop at (end)
-2023/06/28-19:28:01.326 43b0 Level-0 table #209: started
-2023/06/28-19:28:01.352 43b0 Level-0 table #209: 14594 bytes OK
-2023/06/28-19:28:01.380 43b0 Delete type=2 #204
-2023/06/28-19:28:01.380 43b0 Delete type=0 #205
-2023/06/28-19:28:01.381 43b0 Manual compaction at level-0 from '\x00<\x00\x00\x00' @ 72057594037927935 : 1 .. '\x00=\x00\x00\x00' @ 0 : 0; will stop at '\x00<\x06 \x03\x00\x00\x00\x00\x00\x80V@\x00\x01\x0b\x00I\x00d\x00T\x00t\x00l\x009\x000\x00D\x00a\x00y\x00s' @ 78120 : 0
-2023/06/28-19:28:01.381 43b0 Compacting 1@0 + 1@1 files
-2023/06/28-19:28:01.445 43b0 Generated table #210@0: 5074 keys, 44245 bytes
-2023/06/28-19:28:01.445 43b0 Compacted 1@0 + 1@1 files => 44245 bytes
-2023/06/28-19:28:01.479 43b0 compacted to: files[ 0 1 1 0 0 0 0 ]
-2023/06/28-19:28:01.480 43b0 Delete type=2 #209
-2023/06/28-19:28:01.480 43b0 Manual compaction at level-0 from '\x00<\x06 \x03\x00\x00\x00\x00\x00\x80V@\x00\x01\x0b\x00I\x00d\x00T\x00t\x00l\x009\x000\x00D\x00a\x00y\x00s' @ 78120 : 0 .. '\x00=\x00\x00\x00' @ 0 : 0; will stop at (end)
+2023/06/29-12:38:25.847 39d8 Reusing MANIFEST C:\Users\Anderson\Desktop\zap-aya\tokens\whatsbot\Default\IndexedDB\https_web.whatsapp.com_0.indexeddb.leveldb/MANIFEST-000001
+2023/06/29-12:38:25.848 39d8 Recovering log #195
+2023/06/29-12:38:25.911 39d8 Reusing old log C:\Users\Anderson\Desktop\zap-aya\tokens\whatsbot\Default\IndexedDB\https_web.whatsapp.com_0.indexeddb.leveldb/000195.log 
+2023/06/29-12:38:41.189 e58 Level-0 table #204: started
+2023/06/29-12:38:41.245 e58 Level-0 table #204: 1208240 bytes OK
+2023/06/29-12:38:41.247 e58 Delete type=0 #195

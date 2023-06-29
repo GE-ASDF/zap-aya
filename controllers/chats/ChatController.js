@@ -55,5 +55,37 @@ router.get('/finalizar-chat/:chat',[
 
     })
   });
-
+  router.get('/finalizar-chat2/:chat',[
+    check('chat').notEmpty().trim().escape(),
+], (req, res) => {
+    const errors = validationResult(req)
+    if(!errors.isEmpty()){
+        req.flash("error", 'Não foi possível apagar o registro.')
+        res.redirect("/admin/chats");
+        return;
+    }
+    const number = req.params.chat;
+    Users.findOne({where:{number}})
+    .then(({id})=>{
+        Chats.update({finalized: 1},{where:{userId: id, finalized:0}})
+        .then(()=>{
+            wppSession.then((client)=>{
+                client.sendText(number, "Atendimento finalizado");
+                userStages[number] = undefined;
+                atendimentoHumanoAtivo = false;
+                res.redirect("/admin/chats")
+                return;
+            }).catch(()=>{
+                res.redirect("/admin/chats")
+                return;
+            })
+        }).catch(()=>{
+            res.redirect("/admin/chats")
+            return;
+        })
+    }).catch(()=>{
+        res.redirect("/admin/chats")
+        return;
+    })
+  });
 module.exports = router;

@@ -1,5 +1,5 @@
-<%- include("../partials/cabecalho.ejs") %>
-<a style="position:absolute;" href="/finalizar-atendiment/<%= number %>" class="btn btn-danger">Finalizar atendimento</a>
+<%- include("../partials/cabecalhoresponder.ejs") %>
+<a style="position:absolute;" href="/admin/finalizar-chat2/<%= number %>" class="btn btn-danger">Finalizar atendimento</a>
 
         <style>
             body{
@@ -15,24 +15,84 @@
             #ask{
                 background:rgb(30, 126, 1);
             }
+            *{
+                font-size: 24px;
+            }
         </style>
+        <div class="container">
+
         <div style="height:100vh;" class="chat d-flex flex-column ">
-        <div class="bg-light p-2 h-100 d-flex flex-column justify-content-end" id="chat-messages">
-            <p id="ask" class="message p-1">Mensagem</p>
-            <p id="reply" class="message p-1">Mensagem</p>
+        <div style="overflow: hidden;" class="bg-light p-2 h-100 d-flex flex-column justify-content-end" id="chat-messages">
+
+
         </div>
-        <form ectype="multipart/form-data" action="/enviar-mensagem" method="POST">
             <div class="form-group">
                 <input readonly class="form-control" value="<%= number %>" placeholder="Digite o número" type="hidden" name="number">
             </div>
             <div class="form-group mt-2 justify-content-center align-items-center d-flex mb-2">
-                <input style="border-top-right-radius: 0;border-bottom-right-radius: 0;" autofocus name="message" class="form-control" id="" placeholder="Digite a mensagem" cols="30" rows="3">
-                <button style="border-top-left-radius: 0;border-bottom-left-radius: 0;" type="submit" class="btn btn-light"><i class="bi bi-reply"></i></button>
+                <input style="border-top-right-radius: 0;border-bottom-right-radius: 0;" autofocus name="message" class="form-control" id="message" placeholder="Digite a mensagem" cols="30" rows="3">
+                <button id="sendMessage" style="border-top-left-radius: 0;border-bottom-left-radius: 0;" type="button" class="btn btn-light"><i class="bi bi-reply"></i></button>
             </div>
             <!-- <div class="form-group">
                 <label class="fw-bold fs-5" for="image">Enviar imagem</label>
                 <input type="file" accept=".jpg, .png, .jpeg" class="form-control" name="image" id="image">
             </div> -->
-        </form>
+       
     </div>
+</div>
+
 <%- include("../partials/rodape.ejs") %>
+
+<script>
+    let urlParams = window.location.href.split("/")
+    numberUser = urlParams[urlParams.length - 1]
+    document.querySelector("#sendMessage").addEventListener("click", ()=>{
+        send();
+    })
+    document.querySelector("#message").addEventListener("keypress", (e)=>{
+        console.log(e.key)
+        if(e.key.toLowerCase() == "enter"){
+            send();
+        }
+    })
+    function send(){
+        let msgField = document.querySelector("#message")
+        let msg = msgField.value
+        msgField.value = '';
+        messageObj = {
+            to: numberUser,
+            message: msg
+        }
+        if(msg != ""){
+            socket.emit("msg", messageObj);
+        }
+    }
+    console.log('<%= chat %>')
+    socket.on("showmsg", (data)=>{
+        
+        let chatMessages = document.querySelector("#chat-messages")
+        data.forEach((d) =>{
+            if(d.from === numberUser){
+                let ask = chatMessages.querySelectorAll('.ask')
+                    chatMessages.innerHTML += `
+                    <p id="ask" class="ask message p-1">${d.from}: ${d.messages}</p>
+                    `
+            }
+            
+        })
+    })
+    socket.on("atendente", (data)=>{
+        console.log(data)
+        let urlParams = window.location.href.split("/")
+        let numberUser = urlParams[urlParams.length - 1]
+        let chatMessages = document.querySelector("#chat-messages")
+                let reply = chatMessages.querySelectorAll('.reply')
+                chatMessages.innerHTML += `
+                <p id="reply" class="message p-1">${data.message}</p>
+                `
+                
+
+       
+    })
+
+</script>

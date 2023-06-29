@@ -19,7 +19,24 @@ let zap = wppSession.then((client)=>{
     io.emit("conectado");
    
     client.onMessage((message)=>{
+
+        if(mensagensRecebidas.length <= 0){
+            let data = {
+                from: message.from,
+                messages: message.body
+            }
+            mensagensRecebidas.push(data)
+        }else{
+            mensagensRecebidas.find((from)=>{
+                if(from.from == message.from){
+                    from.messages = message.body
+                }
+            })
+        }
+        io.emit("showmsg", mensagensRecebidas);
+
         if(message.from == "558597284507@c.us"){
+            
             Users.findOne({where: {number: message.from}})
             .then((user)=>{
                 if(!user){
@@ -39,5 +56,5 @@ let zap = wppSession.then((client)=>{
 })
 
 
-module.exports = {zap,  userStages, atendimentoHumanoAtivo}
+module.exports = {zap,  userStages, mensagensRecebidas, atendimentoHumanoAtivo}
 

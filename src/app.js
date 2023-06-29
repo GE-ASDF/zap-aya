@@ -9,19 +9,11 @@ const {check, validationResult} = require("express-validator");
 var fileupload = require("express-fileupload");
 const multer = require('multer');
 const Chats = require("../models/Chats");
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, 'uploads/')
-  },
-  filename: (req, file, cb) => {
-    cb(null, Date.now() + '-' + file.ogirinalname)
-  }
-})
+const {wppSession} = require("./server");
+
 const http = require("http").createServer(app);
 const io = require("socket.io")(http)
 const port = 3000;
-const upload = multer({ storage })
-app.use(fileupload());
 
 app.use(session({
     secret:'flashblog',
@@ -42,6 +34,15 @@ io.on('connection', (socket)=>{
   .then((chats)=>{
     socket.emit('new-message', chats);
   })
+  socket.on('msg', (msg)=>{
+    wppSession.then((client)=>{
+        client.sendText(msg.to, msg.message)
+        .then(()=>{
+          let objMsg = {message: msg.message}
+          socket.emit('atendente', objMsg);
+        })
+    })
+  })
   socket.on('disconnect', ()=>{
       console.log("Cliente desconectado");
   })
@@ -55,5 +56,5 @@ http.listen(port, (err)=>{
   }
 })
 
-module.exports = {app,fs, body, io, http, check, validationResult, upload}
+module.exports = {app,fs, body, io, http, check, validationResult}
 

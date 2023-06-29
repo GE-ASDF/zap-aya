@@ -14,11 +14,11 @@ let opcao = [];
 async function findStudent(studentName){
     let data = new FormData;
     data.append("NomeAluno", studentName);
-    let response = await fetch("http://192.168.1.11/api/v1/findbyname.php?filter=prepara&NomeAluno="+studentName, {method:"GET"})
+    let response = await fetch("http://pc-1/api/v1/findbyname.php?filter=prepara&NomeAluno="+studentName, {method:"GET"})
     let student = await response.json();
     
     if(!student){
-        let response = await fetch("http://192.168.1.11/api/v1/findbyname.php?filter=ouro&NomeAluno="+studentName, {method:"GET"})
+        let response = await fetch("http://pc-1/api/v1/findbyname.php?filter=ouro&NomeAluno="+studentName, {method:"GET"})
         let student = await response.json();
 
         if(student){

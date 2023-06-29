@@ -13,6 +13,7 @@
         </thead>
         <tbody>
             <% chats.forEach(chat=>{ %> 
+                <% if(chat.finalized == 0){ %>
                 <tr>
                     <td><%= chat.id %> </td>
                     <td><%= chat.user.name %> </td>
@@ -20,15 +21,18 @@
                     <td>
                         <% if(chat.finalized == 0){ %>
                             <a class="btn btn-danger" href="/admin/finalizar-chat/<%= chat.id %>">Finalizar chat</a>
+                            <a class="btn btn-primary" href="/responder/<%= chat.user.number %>">Atender</a>
                         <% }else{ %>
                             Finalizado
                         <% } %>
                     </td>
                 </tr>
+                <% } %>
             <% }) %>
         </tbody>
     </table>
 
 </section>
+
 
 <%- include("../../../partials/rodape") %>
