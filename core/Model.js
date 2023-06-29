@@ -4,6 +4,7 @@ require("dotenv").config();
 const connection = new Sequelize(process.env.DBNAME, process.env.USER, process.env.PASS, {
     host:process.env.HOST,
     dialect: process.env.DIALECT,
+    timezone: '-03:00',
 })
 
 module.exports = connection;

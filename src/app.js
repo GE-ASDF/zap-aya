@@ -7,7 +7,8 @@ const session = require('express-session');
 const flash = require('connect-flash');
 const {check, validationResult} = require("express-validator");
 var fileupload = require("express-fileupload");
-const multer = require('multer')
+const multer = require('multer');
+const Chats = require("../models/Chats");
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     cb(null, 'uploads/')
@@ -34,6 +35,17 @@ app.use(body.urlencoded({extended: false}));
 app.use(body.json());
 
 app.set("view engine", "ejs");
+
+io.on('connection', (socket)=>{
+  console.log("Novo cliente conectado");
+  Chats.findAll({where:{finalized:0}})
+  .then((chats)=>{
+    socket.emit('new-message', chats);
+  })
+  socket.on('disconnect', ()=>{
+      console.log("Cliente desconectado");
+  })
+})
 
 http.listen(port, (err)=>{
   if(err != null){

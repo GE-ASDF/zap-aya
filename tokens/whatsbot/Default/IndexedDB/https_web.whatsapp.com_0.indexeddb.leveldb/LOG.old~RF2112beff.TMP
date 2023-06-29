@@ -1,0 +1,6 @@
+2023/06/28-17:59:03.353 45f8 Reusing MANIFEST C:\Users\Administrador\Documents\api-aya-zap\tokens\whatsbot\Default\IndexedDB\https_web.whatsapp.com_0.indexeddb.leveldb/MANIFEST-000001
+2023/06/28-17:59:03.354 45f8 Recovering log #1487
+2023/06/28-17:59:03.355 45f8 Reusing old log C:\Users\Administrador\Documents\api-aya-zap\tokens\whatsbot\Default\IndexedDB\https_web.whatsapp.com_0.indexeddb.leveldb/001487.log 
+2023/06/28-17:59:03.355 45f8 Delete type=0 #1475
+2023/06/28-17:59:03.355 45f8 Delete type=2 #1488
+2023/06/28-17:59:04.758 1b50 Moved #1487 to level-1 1204295 bytes OK: files[ 0 1 9 0 0 0 0 ]

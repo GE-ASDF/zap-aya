@@ -1,0 +1,34 @@
+<%- include("../../../partials/cabecalho") %>
+
+<section class="container mt-4">
+    <h1>Lista de chats</h1>
+    <table id="table-all-chats" class="table table-dark table-striped table-bordered">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Nome</th>
+                <th>Telefone</th>
+                <th>Ações</th>
+            </tr>
+        </thead>
+        <tbody>
+            <% chats.forEach(chat=>{ %> 
+                <tr>
+                    <td><%= chat.id %> </td>
+                    <td><%= chat.user.name %> </td>
+                    <td><%= chat.user.number.replace("@c.us","") %> </td>
+                    <td>
+                        <% if(chat.finalized == 0){ %>
+                            <a class="btn btn-danger" href="/admin/finalizar-chat/<%= chat.id %>">Finalizar chat</a>
+                        <% }else{ %>
+                            Finalizado
+                        <% } %>
+                    </td>
+                </tr>
+            <% }) %>
+        </tbody>
+    </table>
+
+</section>
+
+<%- include("../../../partials/rodape") %>

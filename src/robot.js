@@ -3,6 +3,7 @@ const {wppSession} = require("./server");
 let {stages, userStages, atendimentoHumanoAtivo} = require("../helpers/stages");
 let mensagensRecebidas = []
 const connection = require("../core/Model");
+const Users = require("../models/Users");
 
 connection
 .authenticate()
@@ -16,27 +17,24 @@ connection
 
 let zap = wppSession.then((client)=>{
     io.emit("conectado");
+   
     client.onMessage((message)=>{
-        
-        console.log(message)
         if(message.from == "558597284507@c.us"){
-            if(mensagensRecebidas.length > 0){
-                mensagensRecebidas.forEach( mensagemRecebida =>{
-                    if(mensagemRecebida.usuario == message.from){
-                        mensagemRecebida.mensagens.push(message.body)
-                    }
-                })
-            }else{
-                mensagensRecebidas.push({
-                    usuario: message.from,
-                    mensagens: [message.body]
-                })
-            }
-            stages(client, message)
+            Users.findOne({where: {number: message.from}})
+            .then((user)=>{
+                if(!user){
+                    Users.create(({
+                        name: message.sender.pushname,
+                        number: message.from,
+                    })).then(()=>{
+                        stages(client, message)
+                    })
+                }else{
+                    stages(client, message)
+                }
+            })
           
         }
-        
-
     })
 })
 
