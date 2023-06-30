@@ -29,7 +29,7 @@ router.get("/chats", (req, res)=>{
 router.get("/open-chat/:number", (req, res)=>{
     wppSession.then((client)=>{
         let number = req.params.number;
-        client.getMessages(number, {count: -1, media:"all"})
+        client.getMessages(number, {count: -1})
         .then((messages)=>{
             res.render("pages/responder", {messages})
         })
