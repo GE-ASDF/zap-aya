@@ -1,6 +1,0 @@
-2023/06/29-12:38:25.847 39d8 Reusing MANIFEST C:\Users\Anderson\Desktop\zap-aya\tokens\whatsbot\Default\IndexedDB\https_web.whatsapp.com_0.indexeddb.leveldb/MANIFEST-000001
-2023/06/29-12:38:25.848 39d8 Recovering log #195
-2023/06/29-12:38:25.911 39d8 Reusing old log C:\Users\Anderson\Desktop\zap-aya\tokens\whatsbot\Default\IndexedDB\https_web.whatsapp.com_0.indexeddb.leveldb/000195.log 
-2023/06/29-12:38:41.189 e58 Level-0 table #204: started
-2023/06/29-12:38:41.245 e58 Level-0 table #204: 1208240 bytes OK
-2023/06/29-12:38:41.247 e58 Delete type=0 #195

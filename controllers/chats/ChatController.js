@@ -6,14 +6,33 @@ const {check, validationResult} = require("express-validator");
 const {io} = require("../../src/app");
 const {wppSession} = require("../../src/server");
 let {atendimentoHumanoAtivo, userStages } = require("../../src/robot");
+const { base64 } = require("base64-img");
+const sharp = require("sharp");
 
 router.get("/chats", (req, res)=>{
-    Chats.findAll({
-        include:[{model: Users}]
+    wppSession.then((client)=>{
+        client.listChats({onlyUsers:true})
+        .then((chats)=>{
+            
+            res.render("pages/admin/chats/Index", {chats, error:req.flash("error")});
+        })
     })
-    .then((chats)=>{
-        io.emit("ola", chats)
-        res.render("pages/admin/chats/Index", {chats, error:req.flash("error")});
+    // Chats.findAll({
+    //     include:[{model: Users}]
+    // })
+    // .then((chats)=>{
+    //     io.emit("ola", chats)
+    //     res.render("pages/admin/chats/Index", {chats, error:req.flash("error")});
+    // })
+})
+
+router.get("/open-chat/:number", (req, res)=>{
+    wppSession.then((client)=>{
+        let number = req.params.number;
+        client.getMessages(number, {count: -1, media:"all"})
+        .then((messages)=>{
+            res.render("pages/responder", {messages})
+        })
     })
 })
 

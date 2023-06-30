@@ -5,6 +5,7 @@ let mensagensRecebidas = []
 const connection = require("../core/Model");
 const Users = require("../models/Users");
 
+
 connection
 .authenticate()
 .then(()=>{
@@ -18,8 +19,9 @@ connection
 let zap = wppSession.then((client)=>{
     io.emit("conectado");
    
-    client.onMessage((message)=>{
 
+    client.onMessage((message)=>{
+        io.sockets.emit('broadcast', message);
         if(mensagensRecebidas.length <= 0){
             let data = {
                 from: message.from,
@@ -36,6 +38,7 @@ let zap = wppSession.then((client)=>{
         io.emit("showmsg", mensagensRecebidas);
 
         if(message.from == "558597284507@c.us"){
+            console.log("Result:", message);
             
             Users.findOne({where: {number: message.from}})
             .then((user)=>{

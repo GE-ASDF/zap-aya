@@ -29,6 +29,7 @@ app.use(body.json());
 app.set("view engine", "ejs");
 
 io.on('connection', (socket)=>{
+  
   console.log("Novo cliente conectado");
   Chats.findAll({where:{finalized:0}})
   .then((chats)=>{

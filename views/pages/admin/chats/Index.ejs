@@ -5,29 +5,21 @@
     <table id="table-all-chats" class="table table-dark table-striped table-bordered">
         <thead>
             <tr>
-                <th>Id</th>
                 <th>Nome</th>
-                <th>Telefone</th>
+                <th>Número</th>
                 <th>Ações</th>
             </tr>
         </thead>
         <tbody>
             <% chats.forEach(chat=>{ %> 
-                <% if(chat.finalized == 0){ %>
                 <tr>
-                    <td><%= chat.id %> </td>
-                    <td><%= chat.user.name %> </td>
-                    <td><%= chat.user.number.replace("@c.us","") %> </td>
+                    <td><%= chat.contact.pushname %> (<%= chat.unreadCount %>) </td>
+                    <td><%= chat.id._serialized.replace("@c.us","") %> </td>
                     <td>
-                        <% if(chat.finalized == 0){ %>
-                            <a class="btn btn-danger" href="/admin/finalizar-chat/<%= chat.id %>">Finalizar chat</a>
-                            <a class="btn btn-primary" href="/responder/<%= chat.user.number %>">Atender</a>
-                        <% }else{ %>
-                            Finalizado
-                        <% } %>
+                    <a class="btn btn-primary" href="/admin/open-chat/<%= chat.id._serialized %>">Atender</a>
                     </td>
                 </tr>
-                <% } %>
+         
             <% }) %>
         </tbody>
     </table>
@@ -36,3 +28,10 @@
 
 
 <%- include("../../../partials/rodape") %>
+<script>
+    socket.on("broadcast", ()=>{
+        $("#table-all-chats").ready(()=>{
+            $("#table-all-chats").load(" #table-all-chats")
+        })
+    })
+</script>

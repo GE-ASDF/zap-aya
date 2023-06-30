@@ -42,7 +42,7 @@ Array.from(document.querySelectorAll(".btn-close")).forEach(btnClose =>{
       });
       socket.on("img", ()=>{
           document.querySelector("#title-wait").innerText = "Aguarde o QRCODE";
-          document.querySelector("#result").setAttribute("src", "out.png");
+          document.querySelector("#result").setAttribute("src", "/out.png");
       })
 
       socket.on("conectado", ()=>{
