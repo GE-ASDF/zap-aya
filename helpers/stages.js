@@ -78,13 +78,13 @@ async function stages(client, message) {
         .then(()=>{
             sendWppMessage(client, message.from, "*Digite 1, se já é aluno*\n*Digite 2, se não é aluno*\n *ESTA É UMA MENSAGEM AUTOMÁTICA NÃO ENVIE ÁUDIOS E NEM IMAGENS.*")
             .then(()=>{
-                opcao = message.body.split(" ").join(",");
                 userStages[message.from] = "OPCAO";
             })
         })
     }else{
 
-    if(stage == "OPCAO" && opcao){
+    if(stage == "OPCAO"){
+            opcao = message.body.trim().parseInt();
             if(opcao == '1'){
                 let res = sendWppMessage(client, message.from, "Que bom que já é nosso aluno. Agora, por favor, digite seu *nome completo*:")
                 res.then(()=>{
