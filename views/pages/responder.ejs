@@ -12,13 +12,23 @@
     <div id="chat-body" style="overflow-y:auto;max-height:100%;height: 100%;" class="card-body d-flex flex-column">
       <% messages.forEach((message)=>{ %>
         <% if(message.from == '558596541425@c.us'){ %>
-                <p class="p-2 w-75 reply justify-self-end align-self-end" style="border-radius:20px;text-align:left;background-color:#555;color:#fff"><small class="fw-bold"><%= message.sender.pushname %></small><br> <%= message.body %></p>
+                <% if(message.isMedia && message.type == "image"){ %>
+                    <img id="<%= message.id %>" style="color:#000;background:#fff;border-radius:10px" title="Clique para baixar a imagem" data-bs-toggle="modal" data-bs-target="#exampleModal" class="m-1 image-small justify-self-end align-self-end" width="250" height="250"  alt="Clique para baixar">
+                <%}else{%>
+                    <p class="p-2 w-75 reply justify-self-end align-self-end" style="border-radius:20px;text-align:left;background-color:#555;color:#fff"><small class="fw-bold"><%= message.sender.pushname %></small><br> <%= message.body %></p>
+                <%}%>
         <% }else{%>
-                <p class="p-2 w-75" style="border-radius:20px;text-align:left;background-color:#333;color:#fff"><small class="fw-bold"><%= message.sender.pushname %></small><br><%= message.body %></p>
-        <%}%>
-        <% if(message.isMedia && message.type == "image"){ %>
-            <img width="250" height="250" src="data:image/jpeg;base64,<%= message.body %>" alt="">
-        <% } %>
+                <% if(message.type == "image"){ %>
+                    <img id="<%= message.id %>" style="color:#000;background:#fff;border-radius:10px" title="Clique para baixar a imagem" data-bs-toggle="modal" data-bs-target="#exampleModal" class="m-1 image-small" width="250" height="250" alt="Clique na imagem para baixar">
+                <%}else{%>
+                    <p class="p-2 w-75" style="border-radius:20px;text-align:left;background-color:#333;color:#fff"><small class="fw-bold"><%= message.sender.pushname %></small><br>
+                    <img style="border-radius: 100%;width:35px;height:35px" src="<%= messages[0].image %>" alt="">
+                    <%= message.body %>
+                    </p>
+                <%}%>
+           
+        <%}%>        
+            
       <% }) %>
     </div>
     <div class="card-footer text-body-secondary">
@@ -30,9 +40,54 @@
     </div>
   </div>
 </div>
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div style="height: 100%;width:100%;" class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="exampleModalLabel">Modal title</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div style="width: 100%; height:100%" class="modal-body">
+          <img style="max-width:100%;width:100%" id="image-expand" src="" alt="">
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+        </div>
+      </div>
+    </div>
+  </div>
 
 <%- include("../partials/rodape") %>
 <script>
+    let imageSmall = document.querySelectorAll(".image-small")
+    imageSmall.forEach((i)=>{
+        i.addEventListener("click", (e)=>{
+            fetch("/download-image/"+e.target.id)
+            .then((res)=>{
+                return res.json();
+            }).then((res)=>{
+                e.target.src = res;
+                document.querySelector("#image-expand").src = res;
+            })
+            
+        })
+    })
+    function getImage(){
+        let imageSmall = document.querySelectorAll(".image-small")
+        imageSmall.forEach((i)=>{
+            i.addEventListener("click", (e)=>{
+                fetch("/download-image/"+e.target.id)
+                .then((res)=>{
+                    return res.json();
+                }).then((res)=>{
+                    e.target.src = res;
+                    document.querySelector("#image-expand").src = res;
+                })
+                
+            })
+        })
+    }
     let url = window.location.href.split("/")
     let number = url[url.length - 1];
 
@@ -44,11 +99,22 @@
             send();
         }
     })
-
+    imageSmall.forEach((i)=>{
+        i.addEventListener("click", (e)=>{
+            fetch("/download-image/"+e.target.id)
+            .then((res)=>{
+                return res.json();
+            }).then((res)=>{
+                console.log(res);
+                e.target.src = res;
+            })
+        })
+    })
     btnSendMessage.addEventListener("click", (e)=>{
         e.preventDefault();
         send();
     })
+
     function send(){
         let msg = messageField.value
         messageField.value = '';
@@ -68,10 +134,26 @@
             scrollTop: $('#chat-body').prop('scrollHeight')  // fazer scroll para a posição correspondente à altura do 'ul', o que é o mesmo que dizer scroll até ao fundo
         }, 500); 
     }) 
-    
+    $("#chat-body").ready(()=>{
+        let imageSmall = document.querySelectorAll(".image-small")
+        imageSmall.forEach((i)=>{
+            fetch("/download-image/"+i.id)
+            .then((res)=>{
+                return res.json();
+            }).then((res)=>{
+                i.src = res;
+                document.querySelector("#image-expand").src = res;
+            })
+        })
+    })
     socket.on('broadcast', (message)=>{
         if(message.from == number){
-            $("#chat-body").append(`<p class="p-2" style="w-75 border-radius:20px;text-align:left;background-color:#333;color:#fff"><small class="fw-bold">${message.sender.pushname}</small><br> ${message.body} </p>`)
+            if(message.type == "image"){
+                $("#chat-body").append(`<img id="${message.id}" style="color:#000;background:#fff;border-radius:10px" title="Clique para baixar a imagem" data-bs-toggle="modal" data-bs-target="#exampleModal" class="m-1 image-small" width="250" height="250" alt="Clique na imagem para baixar">`)
+                getImage();
+            }else{
+                $("#chat-body").append(`<p class="p-2" style="w-75 border-radius:20px;text-align:left;background-color:#333;color:#fff"><small class="fw-bold">${message.sender.pushname}</small><br> ${message.body} </p>`)
+            }
             $(".chat-body").ready(()=>{
             $('#chat-body').animate({                   // unsando o jQuery animate para animar o scroll
                 scrollTop: $('#chat-body').prop('scrollHeight')  // fazer scroll para a posição correspondente à altura do 'ul', o que é o mesmo que dizer scroll até ao fundo

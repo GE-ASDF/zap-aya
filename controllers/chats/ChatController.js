@@ -3,11 +3,12 @@ const router = express.Router();
 const Chats = require("../../models/Chats");
 const Users = require("../../models/Users");
 const {check, validationResult} = require("express-validator");
-const {io} = require("../../src/app");
+const {io, app} = require("../../src/app");
 const {wppSession} = require("../../src/server");
 let {atendimentoHumanoAtivo, userStages } = require("../../src/robot");
 const { base64 } = require("base64-img");
 const sharp = require("sharp");
+const convert = require("../convert");
 
 router.get("/chats", (req, res)=>{
     wppSession.then((client)=>{
@@ -26,12 +27,16 @@ router.get("/chats", (req, res)=>{
     // })
 })
 
+
 router.get("/open-chat/:number", (req, res)=>{
     wppSession.then((client)=>{
         let number = req.params.number;
-        client.getMessages(number, {count: -1})
+        client.getMessages(number, {count:-1})
         .then((messages)=>{
-            res.render("pages/responder", {messages})
+            client.getProfilePicFromServer(number).then((img)=>{
+                messages[0].image = img.img;
+                res.render("pages/responder", {messages})
+            })
         })
     })
 })
@@ -107,4 +112,17 @@ router.get('/finalizar-chat/:chat',[
         return;
     })
   });
+
+app.get("/download-image/:source", (req, res)=>{
+    let source = req.params.source;
+    wppSession.then((client)=>{
+        client.downloadMedia(source)
+        .then((midia)=>{
+            res.json(midia);
+            return;
+        }).catch((err)=>{
+            return err;
+        })
+    })
+})
 module.exports = router;
