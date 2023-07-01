@@ -19,7 +19,6 @@ connection
 let zap = wppSession.then((client)=>{
     io.emit("conectado");
     
-
     client.onMessage((message)=>{     
         io.sockets.emit('broadcast', message);
         if(mensagensRecebidas.length <= 0){
@@ -38,22 +37,9 @@ let zap = wppSession.then((client)=>{
         io.emit("showmsg", mensagensRecebidas);
 
         if(message.from == "558597284507@c.us"){
-            
-            Users.findOne({where: {number: message.from}})
-            .then((user)=>{
-                if(!user){
-                    Users.create(({
-                        name: message.sender.pushname,
-                        number: message.from,
-                    })).then(()=>{
-                        stages(client, message)
-                    })
-                }else{
-                    stages(client, message)
-                }
-            })
-          
+            stages(client, message)
         }
+          
     })
 })
 

@@ -41,6 +41,16 @@ router.get("/open-chat/:number", (req, res)=>{
     })
 })
 
+router.get("/pegar-contatos", (req, res)=>{
+    wppSession.then((client)=>{
+        client.getAllContacts()
+        .then((contacts)=>{
+            res.json(contacts);
+            return;
+        })
+    })
+})
+
 router.get('/finalizar-chat/:chat',[
     check('chat').notEmpty().isInt().trim().escape(),
 ], (req, res) => {

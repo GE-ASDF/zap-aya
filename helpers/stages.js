@@ -9,7 +9,7 @@ let atendimentoHumanoAtivo = false;
 let date = new Date().toLocaleDateString("pt-br").split("/").reverse().join("-")
 let time = new Date().toLocaleTimeString("pt-br")
 let dateComplete = `${date} ${time}`;
-let opcao = [];
+let opcao = ''
 
 async function findStudent(studentName){
     let data = new FormData;
@@ -72,148 +72,66 @@ const AJUDA = [{},
 
 async function stages(client, message) {
     let stage = userStages[message.from];
-
+    
     if(stage == undefined){
-        Users.findOne({
-            where:{number: message.from}
-        }).then((user)=>{
-            if(user == undefined){
-                Users.create({
-                    number:message.from,
-                    name: message.sender.pushname,
-                }).then(()=>{
-                    let res = sendWppMessage(client, message.from, "Olá! Tudo bem? Eu sou a Aya, atendente virtual da Prepara Cursos. Antes de começarmos escolha uma das opções abaixo: ")
-                    res.then(()=>{
-                        sendWppMessage(client, message.from, "*Digite 1, se já é aluno*\n*Digite 2, se não é aluno*\n *ESTA É UMA MENSAGEM AUTOMÁTICA NÃO ENVIE ÁUDIOS E NEM IMAGENS.*")
-                        userStages[message.from] = "OPCAO";
-                    })
-                })
-            }else{
-                Users.findOne({where:{number:message.from}})
-                .then((user)=>{
-                    if(user.isStudent == 1){
-                        let sended = sendWppMessage(client, message.from, `Olá! Tudo bem, ${user.name}? Como posso te ajudar hoje? `);
-                        sended.then(()=>{
-                            sendWppMessage(client, message.from, "1 - DÚVIDA NA AULA\n2 - INFORMAÇÃO FINANCEIRA\n3 - MUDANÇA DE HORÁRIO\n4 - CANAIS DE ATENDIMENTO")
-                            userStages[message.from] = "AJUDA"
-                        }) 
-                    }else{
-                        let res = sendWppMessage(client, message.from, "Olá! Tudo bem? Eu sou a Aya, atendente virtual da Prepara Cursos. Antes de começarmos escolha uma das opções abaixo: ")
-                        res.then(()=>{
-                            sendWppMessage(client, message.from, "*Digite 1, se já é aluno*\n*Digite 2, se não é aluno*\n *ESTA É UMA MENSAGEM AUTOMÁTICA NÃO ENVIE ÁUDIOS E NEM IMAGENS.*")
-                            userStages[message.from] = "OPCAO";
-                        })
-                    }
-                }).catch(()=>{
-                    let res = sendWppMessage(client, message.from, "Olá! Tudo bem? Eu sou a Aya, atendente virtual da Prepara Cursos. Antes de começarmos escolha uma das opções abaixo: ")
-                    res.then(()=>{
-                        sendWppMessage(client, message.from, "*Digite 1, se já é aluno*\n*Digite 2, se não é aluno*\n *ESTA É UMA MENSAGEM AUTOMÁTICA NÃO ENVIE ÁUDIOS E NEM IMAGENS.*")
-                        userStages[message.from] = "OPCAO";
-                    })
-                })
-            }
+        sendWppMessage(client, message.from, "Olá! Tudo bem? Eu sou a Aya, atendente virtual da Prepara Cursos. Antes de começarmos escolha uma das opções abaixo: ")
+        .then(()=>{
+            sendWppMessage(client, message.from, "*Digite 1, se já é aluno*\n*Digite 2, se não é aluno*\n *ESTA É UMA MENSAGEM AUTOMÁTICA NÃO ENVIE ÁUDIOS E NEM IMAGENS.*")
+            .then(()=>{
+                opcao = message.body.split(" ").join(",");
+                userStages[message.from] = "OPCAO";
+            })
         })
-        
     }else{
-        opcao[message.from] = message.body.split(" ").join(",");
-        if(stage == "OPCAO"){
+
+    if(stage == "OPCAO" && opcao){
             if(opcao == '1'){
-                Users.update({isStudent:1}, {where:{number:message.from}}).then(()=>{
-                    let res = sendWppMessage(client, message.from, "Que bom que já é nosso aluno. Agora, por favor, digite seu *nome completo*:")
-                    res.then(()=>{
-                        userStages[message.from] = "NOME"
-                    })
-                }).catch(()=>{
-                    let res = sendWppMessage(client, message.from, "Que bom que já é nosso aluno. Agora, por favor, digite seu *nome completo*:")
-                    res.then(()=>{
-                        userStages[message.from] = "NOME"
-                    })
+                let res = sendWppMessage(client, message.from, "Que bom que já é nosso aluno. Agora, por favor, digite seu *nome completo*:")
+                res.then(()=>{
+                    userStages[message.from] = "NOME"
                 })
             }else if(opcao == '2'){
-                Users.update({
-                    isStudent:2,
-                },{where:{number:message.from}})
-                .then(()=>{
-                    let res =  sendWppMessage(client, message.from, "Que bom tê-lo conosco. Agora, digite seu *nome completo:*")
-                    res.then(()=>{
-                        userStages[message.from] = "NOME"
-                    })
+                let res =  sendWppMessage(client, message.from, "Que bom tê-lo conosco. Agora, digite seu *nome completo:*")
+                res.then(()=>{
+                    userStages[message.from] = "NOME"
                 })
             }else{
-                Users.findOne({where: {number:message.from}})
-                .then((user)=>{
-                    if(user.isStudent == 1){
-                        let sended = sendWppMessage(client, message.from, `Olá! Tudo bem, ${user.name}? Como posso te ajudar hoje? `);
-                        sended.then(()=>{
-                            sendWppMessage(client, message.from, "1 - DÚVIDA NA AULA\n2 - INFORMAÇÃO FINANCEIRA\n3 - MUDANÇA DE HORÁRIO\n4 - CANAIS DE ATENDIMENTO")
-                            userStages[message.from] = "OPCAO"
-                        }) 
-                    }else{
-                        let res = sendWppMessage(client, message.from, "Desculpe, não entendi, por favor, escolha uma das opções abaixo: ");
-                        res.then(()=>{
-                            sendWppMessage(client, message.from, "*Digite 1, se já é aluno*\n*Digite 2, se não é aluno*")
-                            userStages[message.from] = "OPCAO"
-                        })
-                    }
+                let res = sendWppMessage(client, message.from, "Desculpe, não entendi, por favor, escolha uma das opções abaixo: ");
+                res.then(()=>{
+                    sendWppMessage(client, message.from, "*Digite 1, se já é aluno*\n*Digite 2, se não é aluno*")
+                    userStages[message.from] = "OPCAO"
                 })
             }
         }
-        if(stage == 'NOME'){
+        if(stage == "NOME"){
             let nome = message.body.trim();
-            let res = sendWppMessage(client, message.from, `Aguarde um pouco...`);
-
-            res.then(()=>{
-                findStudent(nome).then((student)=>{
-                    if(student){
-                        Users.update({
-                            isStudent:1,
-                        }, {where: {
-                            number: message.from,
-                        }})
-                        .then(()=>{
-                            let sended = sendWppMessage(client, message.from, `Tudo bem, ${student}! Agora diga-me, digitando o número corresponde a opção de como posso te ajudar: `);
-                            sended.then(()=>{
-                                sendWppMessage(client, message.from, "1 - DÚVIDA NA AULA\n2 - INFORMAÇÃO FINANCEIRA\n3 - MUDANÇA DE HORÁRIO\n4 - CANAIS DE ATENDIMENTO")
-                                userStages[message.from] = "AJUDA"
-                            }) 
-                        }).catch(()=>{
-                            let sended = sendWppMessage(client, message.from, `Tudo bem, ${student}! Agora diga-me, digitando o número corresponde a opção de como posso te ajudar: `);
-                            sended.then(()=>{
-                                sendWppMessage(client, message.from, "1 - DÚVIDA NA AULA\n2 - INFORMAÇÃO FINANCEIRA\n3 - MUDANÇA DE HORÁRIO\n4 - CANAIS DE ATENDIMENTO")
-                                userStages[message.from] = "AJUDA"
-                            }) 
-                        })
-                    }else if(!student && opcao == 2){
-                        Users.update({
-                            isStudent:2
-                        },{where:{number:message.from}})
-                        .then(()=>{
-                            let sended = sendWppMessage(client, message.from, `Tudo bem, ${nome}! Agora diga-me, digitando o número corresponde a opção de como posso te ajudar: `);
-                            sended.then(()=>{
-                                sendWppMessage(client, message.from, "1 - DÚVIDA NA AULA\n2 - INFORMAÇÃO FINANCEIRA\n3 - MUDANÇA DE HORÁRIO\n4 - CANAIS DE ATENDIMENTO")
-                                userStages[message.from] = "AJUDA"
-                            }) 
-                        }).catch(()=>{
-                            let sended = sendWppMessage(client, message.from, `Tudo bem, ${nome}! Agora diga-me, digitando o número corresponde a opção de como posso te ajudar: `);
-                            sended.then(()=>{
-                                sendWppMessage(client, message.from, "1 - DÚVIDA NA AULA\n2 - INFORMAÇÃO FINANCEIRA\n3 - MUDANÇA DE HORÁRIO\n4 - CANAIS DE ATENDIMENTO")
-                                userStages[message.from] = "AJUDA"
-                            }) 
-                        })
-                    }else{
-                        let sended = sendWppMessage(client, message.from, "Desculpe, mas infelizmente não encontramos você no nosso banco de dados.");
-                        sended.then(()=>{
-                            Users.update({
-                                isStudent: 0
-                            }, {where:{number:message.from}})
+            sendWppMessage(client, message.from, "Aguarde um pouco...")
+            .then(()=>{
+                if(opcao == "1"){
+                    findStudent(nome)
+                    .then((student)=>{
+                        if(student){
+                            sendWppMessage(client, message.from, `Tudo bem, ${student}! Agora diga-me, digitando o número corresponde a opção de como posso te ajudar: `)
                             .then(()=>{
-                                userStages[message.from] = undefined;
+                                sendWppMessage(client, message.from, "1 - DÚVIDA NA AULA\n2 - INFORMAÇÃO FINANCEIRA\n3 - MUDANÇA DE HORÁRIO\n4 - CANAIS DE ATENDIMENTO")
+                                userStages[message.from] = "AJUDA"
                             })
-                        })
-                    }  
-                });
-                
-                });              
+                        }
+                    })
+                }else if(opcao == "2"){
+                    sendWppMessage(client, message.from, `Tudo bem, ${nome}! Agora diga-me, digitando o número corresponde a opção de como posso te ajudar: `)
+                    .then(()=>{
+                        sendWppMessage(client, message.from, "1 - DÚVIDA NA AULA\n2 - INFORMAÇÃO FINANCEIRA\n3 - MUDANÇA DE HORÁRIO\n4 - CANAIS DE ATENDIMENTO")
+                        userStages[message.from] = "AJUDA"
+                    })
+                }else{
+                    sendWppMessage(client, message.from, `Desculpe, mas eu não entendi. Por favor, escolha uma das opções abaixo:`)
+                    .then(()=>{
+                        sendWppMessage(client, message.from, "1 - DÚVIDA NA AULA\n2 - INFORMAÇÃO FINANCEIRA\n3 - MUDANÇA DE HORÁRIO\n4 - CANAIS DE ATENDIMENTO")
+                        userStages[message.from] = "OPCAO"
+                    })
+                }
+            })
         }
         if(stage == "AJUDA"){
             let ajudaNumber = parseInt(message.body);
@@ -267,22 +185,21 @@ async function stages(client, message) {
                         }
                     })
                 }else if(dados.status == "FINANCEIRO"){
-                    await sendWppMessage(client, message.from, dados.message);
-                    await sendContactInfo(client, message.from, dados.contato.phoneNumber, dados.contato.displayName)
+                    sendWppMessage(client, message.from, dados.message);
+                    sendContactInfo(client, message.from, dados.contato.phoneNumber, dados.contato.displayName)
                     userStages[message.from] = undefined;
                 }else if(dados.status == "HORARIO"){
-                    await sendWppMessage(client, message.from, dados.message);
+                    sendWppMessage(client, message.from, dados.message);
                     userStages[message.from] = undefined;
                 }else if(dados.status == "CANAIS"){
-                    await sendWppMessage(client, message.from, dados.message);
+                    sendWppMessage(client, message.from, dados.message);
                     userStages[message.from] = undefined;
                 }
             }else{
-                await sendWppMessage(client, message.from, "Desculpe, não entendi, por favor, escolha uma das opções abaixo: ");
-                await sendWppMessage(client, message.from, "1 - DÚVIDA NA AULA\n2 - INFORMAÇÃO FINANCEIRA\n3 - MUDANÇA DE HORÁRIO\n4 - CANAIS DE ATENDIMENTO")
+                sendWppMessage(client, message.from, "Desculpe, não entendi, por favor, escolha uma das opções abaixo: ");
+                sendWppMessage(client, message.from, "1 - DÚVIDA NA AULA\n2 - INFORMAÇÃO FINANCEIRA\n3 - MUDANÇA DE HORÁRIO\n4 - CANAIS DE ATENDIMENTO")
             }
-            
-        }          
+        }
     }
 }
 
@@ -295,4 +212,4 @@ async function sendContactInfo(client, sendTo, contato, name) {
     })
 }
 
-module.exports = {stages, atendimentoHumanoAtivo, userStages};
+module.exports = {stages, atendimentoHumanoAtivo, userStages}
