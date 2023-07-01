@@ -9,12 +9,17 @@ let {atendimentoHumanoAtivo, userStages } = require("../../src/robot");
 const { base64 } = require("base64-img");
 const sharp = require("sharp");
 const convert = require("../convert");
+const sendWppMessage = require("../../helpers/sendWppMessage");
 
 router.get("/chats", (req, res)=>{
+    // Chats.findAll({where:{finalized:0}})
+    // .then((chats)=>{
+    //     res.render("pages/admin/chats/Index", {chats, error:req.flash("error"), success: req.flash("success")})
+    // })
     wppSession.then((client)=>{
         client.listChats({onlyUsers:true})
         .then((chats)=>{
-            
+            io.emit("refresh-chats");
             res.render("pages/admin/chats/Index", {chats, error:req.flash("error")});
         })
     })
@@ -51,8 +56,8 @@ router.get("/pegar-contatos", (req, res)=>{
     })
 })
 
-router.get('/finalizar-chat/:chat',[
-    check('chat').notEmpty().isInt().trim().escape(),
+router.get('/finalizar-chat/:number',[
+    check('number').notEmpty().trim().escape(),
 ], (req, res) => {
     const errors = validationResult(req)
     if(!errors.isEmpty()){
@@ -60,36 +65,32 @@ router.get('/finalizar-chat/:chat',[
         res.redirect("/admin/chats");
         return;
     }
-    const id = req.params.chat;
-    Chats.findOne({where: {id}, include:[{model: Users}]})
-    .then((chat)=>{
-        if(chat){
-            wppSession.then((client)=>{
-              client.sendText(chat.user.number, "Atendimento finalizado")
-              .then(()=>{
-                Chats.update(
-                    {finalized:1}, {
-                        where:{id: chat.id}
-                    }).then(()=>{
-                        userStages[chat.user.number] = undefined;
-                        atendimentoHumanoAtivo = false;
-                    res.redirect("/admin/chats");
-                    return;
-                })
-              })
-            })            
-        }else{
-            res.redirect("/admin/chats")
-            return;
-
+    const number = req.params.number;
+    Users.findOne({where:{number}})  
+    .then((user)=>{
+        if(user){
+            Chats.findOne({where:{userId:user.id}})
+            .then((chat)=>{
+                if(chat){
+                    Chats.update({finalized:1}, {where:{id: chat.id}})
+                    .then(()=>{
+                        wppSession.then((client)=>{
+                            sendWppMessage(client, number, "Atendimento finalizado")
+                            .then(()=>{
+                                userStages[number] = undefined;
+                                atendimentoHumanoAtivo = false;
+                                req.flash("success", "Atendimento finalizado");
+                                res.redirect("/admin/chats");
+                            })
+                        })
+                        
+                    })
+                }
+            })
         }
-    }).catch(()=>{
-        res.redirect("/admin/chats")
-        return;
-
     })
   });
-  router.get('/finalizar-chat2/:chat',[
+router.get('/finalizar-chat2/:chat',[
     check('chat').notEmpty().trim().escape(),
 ], (req, res) => {
     const errors = validationResult(req)

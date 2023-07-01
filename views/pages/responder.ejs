@@ -4,16 +4,17 @@
 
 <div id="chat-from" style="height: 100vh;max-height: 100vh;" class="chat-from card bg-dark text-center">
     <div class="card-header bg-dark text-white">
-        <div class="d-flex justify-content-between">
-            <a class="btn btn-primary" href="/admin/chats">Voltar</a>
-            <span><%= messages[0].sender.pushname %></span>
+        <div class="d-flex justify-content-start align-items-center">
+            <a class="btn m-1 btn-primary" href="/admin/chats">Voltar</a>
+            <a id="finalizar-chat" class="btn m-1 btn-danger">Finalizar</a>
+            <span class="m-1"><%= messages[0].sender.pushname %></span>
         </div>
     </div>
     <div id="chat-body" style="overflow-y:auto;max-height:100%;height: 100%;" class="card-body d-flex flex-column">
       <% messages.forEach((message)=>{ %>
         <% if(message.from == '558596541425@c.us'){ %>
                 <% if(message.isMedia && message.type == "image"){ %>
-                    <img id="<%= message.id %>" style="color:#000;background:#fff;border-radius:10px" title="Clique para baixar a imagem" data-bs-toggle="modal" data-bs-target="#exampleModal" class="m-1 image-small justify-self-end align-self-end" width="250" height="250"  alt="Clique para baixar">
+                    <img onclick="expandImage(this)" id="<%= message.id %>" style="color:#000;background:#fff;border-radius:10px" title="Clique para baixar a imagem" data-bs-toggle="modal" data-bs-target="#exampleModal" class="m-1 image-small justify-self-end align-self-end" width="250" height="250"  alt="Clique para baixar">
                 <%}else if(message.type == "vcard"){%>
                     <div class="card w-75">
                         <h5 class="card-header"><%= message.vcardFormattedName %></h5>
@@ -26,7 +27,7 @@
                 <%}%>
         <% }else{%>
                 <% if(message.type == "image"){ %>
-                    <img id="<%= message.id %>" style="color:#000;background:#fff;border-radius:10px" title="Clique para baixar a imagem" data-bs-toggle="modal" data-bs-target="#exampleModal" class="m-1 image-small" width="250" height="250" alt="Clique na imagem para baixar">
+                    <img onclick="expandImage(this)" id="<%= message.id %>" style="color:#000;background:#fff;border-radius:10px" title="Clique para baixar a imagem" data-bs-toggle="modal" data-bs-target="#exampleModal" class="m-1 image-small" width="250" height="250" alt="Clique na imagem para baixar">
                 <%}else if(message.type == "vcard"){%>
                     <div class="card w-75">
                         <h5 class="card-header"><%= message.vcardFormattedName %></h5>
@@ -129,19 +130,22 @@
   </div>
 <%- include("../partials/rodape") %>
 <script>
-    let imageSmall = document.querySelectorAll(".image-small")
-    imageSmall.forEach((i)=>{
-        i.addEventListener("click", (e)=>{
-            fetch("/download-image/"+e.target.id)
-            .then((res)=>{
-                return res.json();
-            }).then((res)=>{
-                e.target.src = res;
-                document.querySelector("#image-expand").src = res;
-            })
+    // let imageSmall = document.querySelectorAll(".image-small")
+    // imageSmall.forEach((i)=>{
+    //     i.addEventListener("click", (e)=>{
+    //         fetch("/download-image/"+e.target.id)
+    //         .then((res)=>{
+    //             return res.json();
+    //         }).then((res)=>{
+    //             e.target.src = res;
+    //             document.querySelector("#image-expand").src = res;
+    //         })
             
-        })
-    })
+    //     })
+    // })
+    function expandImage(el){
+        document.querySelector("#image-expand").src = el.src
+    }
     function getImage(){
         let imageSmall = document.querySelectorAll(".image-small")
         imageSmall.forEach((i)=>{
@@ -157,9 +161,12 @@
             })
         })
     }
+
     let url = window.location.href.split("/")
     let number = url[url.length - 1];
-
+    $("#finalizar-chat").ready(()=>{
+        document.querySelector("#finalizar-chat").href = "/admin/finalizar-chat/" + number;
+    })
     let messageField = document.querySelector("#message")
     let btnSendMessage = document.querySelector("#send-message")
 
@@ -168,17 +175,7 @@
             send();
         }
     })
-    imageSmall.forEach((i)=>{
-        i.addEventListener("click", (e)=>{
-            fetch("/download-image/"+e.target.id)
-            .then((res)=>{
-                return res.json();
-            }).then((res)=>{
-                console.log(res);
-                e.target.src = res;
-            })
-        })
-    })
+    
     btnSendMessage.addEventListener("click", (e)=>{
         e.preventDefault();
         send();
@@ -215,11 +212,22 @@
             })
         })
     })
+    async function getimageByid(id){
+        fetch("/download-image/"+id)
+            .then((res)=>{
+                return res.json();
+            }).then((res)=>{
+                document.getElementById(id).src = res
+            })
+    }
     socket.on('broadcast', (message)=>{
         if(message.from == number){
+            console.log(message)
             if(message.type == "image"){
-                $("#chat-body").append(`<img id="${message.id}" style="color:#000;background:#fff;border-radius:10px" title="Clique para baixar a imagem" data-bs-toggle="modal" data-bs-target="#exampleModal" class="m-1 image-small" width="250" height="250" alt="Clique na imagem para baixar">`)
-                getImage();
+                    $("#chat-body").append(`<img onclick="expandImage(this)" id="${message.id}" style="color:#000;background:#fff;border-radius:10px" title="Clique para baixar a imagem" data-bs-toggle="modal" data-bs-target="#exampleModal" class="m-1 image-small" width="250" height="250" alt="Clique na imagem para baixar">`)
+                    .ready(()=>{
+                        getimageByid(message.id)
+                    })
             }else{
                 $("#chat-body").append(`<p class="p-2" style="w-75 border-radius:20px;text-align:left;background-color:#333;color:#fff"><small class="fw-bold">${message.sender.pushname}</small><br> ${message.body} </p>`)
             }

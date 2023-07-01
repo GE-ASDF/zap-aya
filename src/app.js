@@ -35,6 +35,7 @@ io.on('connection', (socket)=>{
   .then((chats)=>{
     socket.emit('new-message', chats);
   })
+
   socket.on('msg', (msg)=>{
     wppSession.then((client)=>{
         client.sendText(msg.to, msg.message)

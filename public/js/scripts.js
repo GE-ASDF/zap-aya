@@ -14,6 +14,7 @@ Array.from(document.querySelectorAll(".btn-close")).forEach(btnClose =>{
             const close = document.createElement("div");
             alert.classList.add("alert")
             alert.classList.add("alert-success")
+            console.log(user)
             message.textContent = `Há uma nova mensagem!`
             close.classList.add("btn")
             close.classList.add("btn-danger")
@@ -52,6 +53,23 @@ Array.from(document.querySelectorAll(".btn-close")).forEach(btnClose =>{
 
       socket.on("ola", (chats)=>{
         console.log(chats)
+      })
+      socket.on("usuario-atendido", (name)=>{
+          const mensagem = document.querySelector(".mensagem")
+          mensagem.innerHTML = '';
+          const alert = document.createElement("div");
+            const message = document.createElement("div");
+            const close = document.createElement("div");
+            alert.classList.add("alert")
+            alert.classList.add("alert-primary")
+            message.textContent = `O usuário ${name} está sendo atendido.`
+            close.classList.add("btn")
+            close.classList.add("btn-danger")
+            close.classList.add("close")
+            close.textContent = "X"
+            alert.appendChild(message)
+            alert.appendChild(close)
+            mensagem.append(alert);
       })
 function mensagemInformacional(){
 

@@ -36,7 +36,7 @@ const AJUDA = [{},
         resposta(){
             return {
                 status: 'TRANSFERIDO',
-                message: "Transferimos você para um atendente. Aguarde um pouco...",
+                message: "Olá! Como posso ajudar você?",
             }
         }
     },
@@ -84,7 +84,16 @@ async function stages(client, message) {
     }else{
 
     if(stage == "OPCAO"){
-            opcao = message.body.trim().parseInt();
+
+            if(message != "chat"){
+                let res = sendWppMessage(client, message.from, "Desculpe, não entendi, por favor, escolha uma das opções abaixo: ");
+                res.then(()=>{
+                    sendWppMessage(client, message.from, "*Digite 1, se já é aluno*\n*Digite 2, se não é aluno*")
+                    userStages[message.from] = "OPCAO"
+                    return;
+                })
+            }
+            opcao = message.body.trim();
             if(opcao == '1'){
                 let res = sendWppMessage(client, message.from, "Que bom que já é nosso aluno. Agora, por favor, digite seu *nome completo*:")
                 res.then(()=>{
@@ -113,7 +122,7 @@ async function stages(client, message) {
                         if(student){
                             sendWppMessage(client, message.from, `Tudo bem, ${student}! Agora diga-me, digitando o número corresponde a opção de como posso te ajudar: `)
                             .then(()=>{
-                                sendWppMessage(client, message.from, "1 - DÚVIDA NA AULA\n2 - INFORMAÇÃO FINANCEIRA\n3 - MUDANÇA DE HORÁRIO\n4 - CANAIS DE ATENDIMENTO")
+                                sendWppMessage(client, message.from, "1 - ATENDIMENTO HUMANO\n2 - INFORMAÇÃO FINANCEIRA\n3 - MUDANÇA DE HORÁRIO\n4 - CANAIS DE ATENDIMENTO")
                                 userStages[message.from] = "AJUDA"
                             })
                         }
@@ -121,13 +130,13 @@ async function stages(client, message) {
                 }else if(opcao == "2"){
                     sendWppMessage(client, message.from, `Tudo bem, ${nome}! Agora diga-me, digitando o número corresponde a opção de como posso te ajudar: `)
                     .then(()=>{
-                        sendWppMessage(client, message.from, "1 - DÚVIDA NA AULA\n2 - INFORMAÇÃO FINANCEIRA\n3 - MUDANÇA DE HORÁRIO\n4 - CANAIS DE ATENDIMENTO")
+                        sendWppMessage(client, message.from, "1 - ATENDIMENTO HUMANO\n2 - INFORMAÇÃO FINANCEIRA\n3 - MUDANÇA DE HORÁRIO\n4 - CANAIS DE ATENDIMENTO")
                         userStages[message.from] = "AJUDA"
                     })
                 }else{
                     sendWppMessage(client, message.from, `Desculpe, mas eu não entendi. Por favor, escolha uma das opções abaixo:`)
                     .then(()=>{
-                        sendWppMessage(client, message.from, "1 - DÚVIDA NA AULA\n2 - INFORMAÇÃO FINANCEIRA\n3 - MUDANÇA DE HORÁRIO\n4 - CANAIS DE ATENDIMENTO")
+                        sendWppMessage(client, message.from, "1 - ATENDIMENTO HUMANO\n2 - INFORMAÇÃO FINANCEIRA\n3 - MUDANÇA DE HORÁRIO\n4 - CANAIS DE ATENDIMENTO")
                         userStages[message.from] = "OPCAO"
                     })
                 }
@@ -140,7 +149,7 @@ async function stages(client, message) {
                 if(!ajuda){
                     let res = sendWppMessage(client, message.from, "Desculpe, não entendi, por favor, escolha uma das opções abaixo: ");
                     res.then(()=>{
-                        sendWppMessage(client, message.from, "1 - DÚVIDA NA AULA\n2 - INFORMAÇÃO FINANCEIRA\n3 - MUDANÇA DE HORÁRIO\n4 - CANAIS DE ATENDIMENTO")
+                        sendWppMessage(client, message.from, "1 - ATENDIMENTO HUMANO\n2 - INFORMAÇÃO FINANCEIRA\n3 - MUDANÇA DE HORÁRIO\n4 - CANAIS DE ATENDIMENTO")
                     })
                     
                 }
@@ -150,19 +159,38 @@ async function stages(client, message) {
                     Users.findOne({raw: true, where: {number: message.from}})
                     .then((user)=>{
                         if(user){
-                            Chats.create({
-                                userId: user.id,
-                                createdAt: dateComplete,
-                                updateAt:dateComplete,
-                            }).then(()=>{
-                                Chats.findAll({raw:true, where:{finalized: 0}})
-                                .then((chats)=>{
-                                    io.emit("new-message", chats);
-                                    console.log("Atendimento automático pausado")
-                                    atendimentoHumanoAtivo = true;
-                                    sendWppMessage(client, message.from, dados.message);
-                                    userStages[message.from] = dados.status;
-                                })
+                            Chats.findOne({where:{userId:user.id}})
+                            .then((chat)=>{
+                                if(!chat){
+                                    Chats.create({
+                                        userId: user.id,
+                                        createdAt: dateComplete,
+                                        updateAt:dateComplete,
+                                    }).then(()=>{
+                                        Chats.findAll({raw:true, where:{finalized: 0}})
+                                        .then((chats)=>{
+                                            chats.name = user.name;
+                                            io.emit("new-message", chats);
+                                            console.log("Atendimento automático pausado")
+                                            atendimentoHumanoAtivo = true;
+                                            sendWppMessage(client, message.from, dados.message);
+                                            userStages[message.from] = dados.status;
+                                        })
+                                    })
+                                }else{
+                                    Chats.update({finalized:0}, {where:{userId:user.id}})
+                                    .then(()=>{
+                                        Chats.findAll({raw:true, where:{finalized: 0}})
+                                        .then((chats)=>{
+                                            chats.name = user.name;
+                                            io.emit("new-message", chats);
+                                            console.log("Atendimento automático pausado")
+                                            atendimentoHumanoAtivo = true;
+                                            sendWppMessage(client, message.from, dados.message);
+                                            userStages[message.from] = dados.status;
+                                        })
+                                    })
+                                }
                             })
                         }else{
                             Users.create({name:message.sender.pushname, number:message.from})
@@ -173,6 +201,7 @@ async function stages(client, message) {
                                     .then(()=>{
                                         Chats.findAll({where: {finalized:0}})
                                         .then((chats)=>{
+                                            chats.name = user.name;
                                             io.emit("new-message", chats);
                                             console.log("Atendimento automático pausado")
                                             atendimentoHumanoAtivo = true;
@@ -197,7 +226,7 @@ async function stages(client, message) {
                 }
             }else{
                 sendWppMessage(client, message.from, "Desculpe, não entendi, por favor, escolha uma das opções abaixo: ");
-                sendWppMessage(client, message.from, "1 - DÚVIDA NA AULA\n2 - INFORMAÇÃO FINANCEIRA\n3 - MUDANÇA DE HORÁRIO\n4 - CANAIS DE ATENDIMENTO")
+                sendWppMessage(client, message.from, "1 - ATENDIMENTO HUMANO\n2 - INFORMAÇÃO FINANCEIRA\n3 - MUDANÇA DE HORÁRIO\n4 - CANAIS DE ATENDIMENTO")
             }
         }
     }

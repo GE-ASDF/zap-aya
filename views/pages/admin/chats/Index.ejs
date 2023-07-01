@@ -1,6 +1,19 @@
 <%- include("../../../partials/cabecalho") %>
-
+<style>
+    .detalhe{
+        content: "";
+        display: block;
+        width: 10px;
+        height:10px;
+        background:#6B952F;
+        border-radius: 100%;
+        position: absolute;
+        top:15px;
+        right: 0px;
+    }
+</style>
 <section class="container mt-4">
+
     <h1>Lista de chats</h1>
     <table id="table-all-chats" class="table table-dark table-striped table-bordered">
         <thead>
@@ -10,13 +23,20 @@
                 <th>Ações</th>
             </tr>
         </thead>
-        <tbody>
+        <tbody id="table-chats-body">
             <% chats.forEach(chat=>{ %> 
                 <tr>
-                    <td><%= chat.contact.pushname %> (<%= chat.unreadCount %>) </td>
+                    <td>
+                        <span style="position: relative;" class="username p-3">
+                            <%= chat.contact.pushname %>
+                            <% if(chat.unreadCount > 0){%>
+                                <span class="detalhe"></span>
+                            <% } %>
+                        </span> 
+                    </td>
                     <td><%= chat.id._serialized.replace("@c.us","") %> </td>
                     <td>
-                    <a class="btn btn-primary" href="/admin/open-chat/<%= chat.id._serialized %>">Atender</a>
+                    <a id="btn-atender" data-name="<%= chat.contact.pushname %>" class="btn btn-primary" href="/admin/open-chat/<%= chat.id._serialized %>">Atender</a>
                     </td>
                 </tr>
          
@@ -34,4 +54,11 @@
             $("#table-all-chats").load(" #table-all-chats")
         })
     })
+    socket.on("refresh-chats", ()=>{
+        $("#table-all-chats").ready(()=>{
+            $("#table-all-chats").load(" #table-all-chats")
+        })
+    })
+   
+
 </script>
