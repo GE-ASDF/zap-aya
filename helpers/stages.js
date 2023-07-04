@@ -85,13 +85,14 @@ async function stages(client, message) {
 
     if(stage == "OPCAO"){
 
-            if(message != "chat"){
-                let res = sendWppMessage(client, message.from, "Desculpe, não entendi, por favor, escolha uma das opções abaixo: ");
-                res.then(()=>{
+            if(message.type != "chat"){
+                sendWppMessage(client, message.from, "Desculpe, não entendi, por favor, escolha uma das opções abaixo: ")
+                .then(()=>{
                     sendWppMessage(client, message.from, "*Digite 1, se já é aluno*\n*Digite 2, se não é aluno*")
                     userStages[message.from] = "OPCAO"
                     return;
                 })
+                return;
             }
             opcao = message.body.trim();
             if(opcao == '1'){
@@ -124,6 +125,12 @@ async function stages(client, message) {
                             .then(()=>{
                                 sendWppMessage(client, message.from, "1 - ATENDIMENTO HUMANO\n2 - INFORMAÇÃO FINANCEIRA\n3 - MUDANÇA DE HORÁRIO\n4 - CANAIS DE ATENDIMENTO")
                                 userStages[message.from] = "AJUDA"
+                            })
+                        }else{
+                            sendWppMessage(client, message.from, `Desculpe, ${nome}, mas não encontramos você no nosso banco de dados de alunos.`)
+                            .then(()=>{
+                                // sendWppMessage(client, message.from, "*Digite 1, se já é aluno*\n*Digite 2, se não é aluno*")
+                                userStages[message.from] = undefined;
                             })
                         }
                     })
@@ -225,8 +232,10 @@ async function stages(client, message) {
                     userStages[message.from] = undefined;
                 }
             }else{
-                sendWppMessage(client, message.from, "Desculpe, não entendi, por favor, escolha uma das opções abaixo: ");
-                sendWppMessage(client, message.from, "1 - ATENDIMENTO HUMANO\n2 - INFORMAÇÃO FINANCEIRA\n3 - MUDANÇA DE HORÁRIO\n4 - CANAIS DE ATENDIMENTO")
+                sendWppMessage(client, message.from, "Desculpe, não entendi, por favor, escolha uma das opções abaixo: ")
+                .then(()=>{
+                    sendWppMessage(client, message.from, "1 - ATENDIMENTO HUMANO\n2 - INFORMAÇÃO FINANCEIRA\n3 - MUDANÇA DE HORÁRIO\n4 - CANAIS DE ATENDIMENTO")
+                })
             }
         }
     }

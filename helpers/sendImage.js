@@ -1,5 +1,7 @@
+
+require("dotenv").config();
 async function sendWppImage(client, sendTo, nameImage, captionText = "image"){
-    let pathImage = "/uploads/" + nameImage;
+    let pathImage = process.env.PATH_TO_IMAGE_UPLOAD + nameImage;
     let response = await client
   .sendImage(
     sendTo,
@@ -7,12 +9,6 @@ async function sendWppImage(client, sendTo, nameImage, captionText = "image"){
     nameImage,
     captionText
   )
-  .then((result) => {
-    return result;
-  })
-  .catch((erro) => {
-    return erro;
-  });
   return response;
 }
 

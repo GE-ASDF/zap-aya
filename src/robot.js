@@ -1,4 +1,4 @@
-const {io} = require("./app");
+const {io, app} = require("./app");
 const {wppSession} = require("./server");
 let {stages, userStages, atendimentoHumanoAtivo} = require("../helpers/stages");
 let mensagensRecebidas = []
@@ -35,13 +35,15 @@ let zap = wppSession.then((client)=>{
             })
         }
         io.emit("showmsg", mensagensRecebidas);
-
-        if(message.from == "558597284507@c.us"){
+        console.log(message)
+        if(message.from == "558597284507@c.us" && !message.isGroupMsg /*|| message.from == "558591116429@c.us" /* &&  message.from !== "558591442725@c.us" && message.from !== "558586307001@c.us" && message.from !== "558591889828" */ /*|| message.from == "558597291722@c.us"*/){
+            console.log(message)
             stages(client, message)
         }
           
     })
 })
+
 
 
 module.exports = {zap,  userStages, mensagensRecebidas, atendimentoHumanoAtivo}

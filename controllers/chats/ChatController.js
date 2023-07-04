@@ -7,10 +7,42 @@ const {io, app} = require("../../src/app");
 const {wppSession} = require("../../src/server");
 let {atendimentoHumanoAtivo, userStages } = require("../../src/robot");
 const { base64 } = require("base64-img");
-const sharp = require("sharp");
-const convert = require("../convert");
+let nomeArquivo = null;
 const sendWppMessage = require("../../helpers/sendWppMessage");
+const multer = require("multer");
+const sendWppImage = require("../../helpers/sendImage");
+const storage = multer.diskStorage({
+    destination: (req, file, cb)=>{
+        cb(null, 'uploads/')
+    },
+    filename: (req, file, cb)=>{
+        console.log(file);
+        const extensaoArquivo = file.originalname.split(".")[1];
+        const novoNomeArquivo = require("crypto")
+        .randomBytes(64)
+        .toString('hex')
+        cb(null, `${novoNomeArquivo}.${extensaoArquivo}`)
+        nomeArquivo = `${novoNomeArquivo}.${extensaoArquivo}`;
+        return `${novoNomeArquivo}.${extensaoArquivo}`
+    }
+})
+const upload = multer({storage});
 
+app.get("/imagem-enviar", (req, res)=>{
+    res.render("pages/imagem");
+})
+
+app.post("/admin/imagem",upload.single('image'), (req, res)=>{
+    const {number, caption} = req.body;
+    wppSession.then((client)=>{
+        sendWppImage(client, number, nomeArquivo, caption)
+        .then((res)=>{
+            res.json(res);
+        }).catch((err)=>{
+            res.json(err)
+        })
+    })
+})
 router.get("/chats", (req, res)=>{
     // Chats.findAll({where:{finalized:0}})
     // .then((chats)=>{
@@ -39,7 +71,7 @@ router.get("/open-chat/:number", (req, res)=>{
         client.getMessages(number, {count:-1})
         .then((messages)=>{
             client.getProfilePicFromServer(number).then((img)=>{
-                messages[0].image = img.img;
+                messages[0].image = {type: 'image', img: img.img};
                 res.render("pages/responder", {messages})
             })
         })

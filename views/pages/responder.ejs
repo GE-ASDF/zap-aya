@@ -23,7 +23,9 @@
                         </div>
                     </div>
                 <%}else{%>
-                    <p class="p-2 w-75 reply justify-self-end align-self-end" style="border-radius:20px;text-align:left;background-color:#555;color:#fff"><small class="fw-bold"><%= message.sender.pushname %></small><br> <%= message.body %></p>
+                    <p class="p-2 w-75 reply justify-self-end align-self-end" style="border-radius:20px;text-align:left;background-color:#555;color:#fff"><small class="fw-bold"><%= message.sender.pushname %></small><br> <%= 
+                      message.body;
+                      %></p>
                 <%}%>
         <% }else{%>
                 <% if(message.type == "image"){ %>
